@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAKUBA - Portal de Novelas Ligeras en Línea</title>
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
     <style>
         :root {
             --azul-principal: #006aa6;
@@ -622,7 +620,7 @@
                         <label>Contraseña</label>
                         <input type="password" id="login-pass" placeholder="••••••••">
                     </div>
-                    <button class="btn-guardar" onclick="ejecutarLoginLocal()">Ingresar al Portal</button>
+                    <button class="btn-guardar" onclick="window.ejecutarLoginLocal()">Ingresar al Portal</button>
                 </div>
                 <div class="panel-creacion card shadow">
                     <h2 class="section-title" style="margin-bottom:20px;">Registrarse en SAKUBA</h2>
@@ -634,7 +632,7 @@
                         <label>Contraseña</label>
                         <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
                     </div>
-                    <button class="btn-guardar" style="background-color:#4da1a9;" onclick="ejecutarRegistroLocal()">Crear Cuenta Nueva</button>
+                    <button class="btn-guardar" style="background-color:#4da1a9;" onclick="window.ejecutarRegistroLocal()">Crear Cuenta Nueva</button>
                 </div>
             </div>
         </section>
@@ -661,7 +659,7 @@
                         <option value="Comedia">Comedia</option>
                     </select>
                 </div>
-                <button class="btn-guardar" onclick="guardarNuevaObraEnNube()">Publicar Novela en SAKUBA</button>
+                <button class="btn-guardar" id="btn-guardar-obra-nube">Publicar Novela en SAKUBA</button>
             </div>
 
             <div class="panel-creacion card shadow" style="margin-top: 30px;">
@@ -679,19 +677,19 @@
                     <label>Contenido del Manuscrito</label>
                     <textarea id="crear-cap-contenido" style="height: 250px;" placeholder="Pega o escribe el cuerpo de tu historia aquí..."></textarea>
                 </div>
-                <button class="btn-guardar" onclick="guardarNuevoCapituloEnNube()">Publicar Capítulo</button>
+                <button class="btn-guardar" id="btn-guardar-cap-nube">Publicar Capítulo</button>
             </div>
         </section>
 
         <section id="vista-obra" class="vista-seccion">
-            <div class="back-link" onclick="mostrarVista('inicio')">← Volver al inicio</div>
+            <div class="back-link" id="btn-volver-inicio-ficha">← Volver al inicio</div>
             <div class="obra-ficha card shadow">
                 <div class="obra-header-ficha">
                     <h2 id="ficha-titulo">TITULO_OBRA</h2>
                     <div class="badges-container">
                         <span id="ficha-badge-tipo" class="badge badge-tipo">SERIALIZADA</span>
                         <span id="ficha-badge-estado" class="badge">ESTADO</span>
-                        <button class="btn-votar" id="btn-accion-votar" onclick="registrarVotoNovelaInSitu()">
+                        <button class="btn-votar" id="btn-accion-votar">
                             👍 Votar (<span id="ficha-total-votos">0</span>)
                         </button>
                     </div>
@@ -710,14 +708,14 @@
 
         <section id="vista-lector" class="vista-seccion">
             <div class="lector-controls shadow">
-                <button onclick="volverAFicha()" class="btn-control">← Ficha de la obra</button>
+                <button class="btn-control" id="btn-lector-volver-ficha">← Ficha de la obra</button>
                 <div class="selector-capitulo-container">
-                    <select id="selector-capitulos" onchange="cambiarCapituloPorSelector(this.value)">
+                    <select id="selector-capitulos">
                     </select>
                 </div>
                 <div class="tipografia-controles">
-                    <button onclick="cambiarTamanoLetra(-2)" class="btn-control" style="font-weight: bold; padding: 6px 10px;">A-</button>
-                    <button onclick="cambiarTamanoLetra(2)" class="btn-control" style="font-weight: bold; padding: 6px 10px;">A+</button>
+                    <button id="btn-letra-disminuir" class="btn-control" style="font-weight: bold; padding: 6px 10px;">A-</button>
+                    <button id="btn-letra-aumentar" class="btn-control" style="font-weight: bold; padding: 6px 10px;">A+</button>
                 </div>
             </div>
             
@@ -728,8 +726,8 @@
                 </div>
                 
                 <div class="lector-navegacion-botones">
-                    <button id="btn-cap-anterior" onclick="navegarCapitulo(-1)" class="btn-nav-cap">← Capítulo Anterior</button>
-                    <button id="btn-cap-siguiente" onclick="navegarCapitulo(1)" class="btn-nav-cap">Capítulo Siguiente →</button>
+                    <button id="btn-cap-anterior" class="btn-nav-cap">← Capítulo Anterior</button>
+                    <button id="btn-cap-siguiente" class="btn-nav-cap">Capítulo Siguiente →</button>
                 </div>
 
                 <div class="comentarios-seccion">
@@ -748,21 +746,24 @@
         <p>SAKUBA REALTIME – Gestión, curaduría y base de datos abierta en la nube.</p>
         <p>© 2026 Hoshikari Corporation. Todos los derechos reservados. Sistema dinámico público.</p>
     </footer>
+        <script type="module">
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, set, push, child, get, onValue } from "https://gstatic.com";
 
-    <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBs1VtYF0futb73wFbpJTztHrPmowS2vxs",
+            apiKey: "AIzaSyDb-AQb-OOZAFuf5wtvr8h4Zj5XA41fp_Q",
             authDomain: "://firebaseapp.com",
-            projectId: "sakuba-b02cb",
-            storageBucket: "sakuba-b02cb.firebasestorage.app",
-            messagingSenderId: "155952868471",
-            appId: "1:155952868471:web:e96d96f0999c67e212ea72",
-            databaseURL: "https://firebaseio.com"
+            databaseURL: "https://sakuba-nuevo-default-rtdb.firebaseio.com",
+            projectId: "sakuba-nuevo",
+            storageBucket: "sakuba-nuevo.firebasestorage.app",
+            messagingSenderId: "120027455019",
+            appId: "1:120027455019:web:d993edc1bc734efa81146e"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-                let usuarioLogueado = null;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let usuarioLogueado = null;
         let OBRAS_GLOBAL = [];
         let obraActual = null;
         let capituloActualIdx = 0;
@@ -776,32 +777,41 @@
             return texto.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+\$/g, '');
         }
 
-        window.onload = function() {
+        window.addEventListener("DOMContentLoaded", () => {
             const userGuardado = localStorage.getItem("sakuba_user_local");
             if (userGuardado) {
                 usuarioLogueado = JSON.parse(userGuardado);
-                actualizarInterfazUsuario();
-            } else {
-                actualizarInterfazUsuario();
             }
+            actualizarInterfazUsuario();
             escucharObrasDesdeNube();
-        };
+            
+            document.getElementById("btn-guardar-obra-nube").onclick = guardarNuevaObraEnNube;
+            document.getElementById("btn-guardar-cap-nube").onclick = guardarNuevoCapituloEnNube;
+            document.getElementById("btn-volver-inicio-ficha").onclick = () => mostrarVista('inicio');
+            document.getElementById("btn-lector-volver-ficha").onclick = volverAFicha;
+            document.getElementById("btn-letra-disminuir").onclick = () => cambiarTamanoLetra(-2);
+            document.getElementById("btn-letra-aumentar").onclick = () => cambiarTamanoLetra(2);
+            document.getElementById("btn-cap-anterior").onclick = () => navegarCapitulo(-1);
+            document.getElementById("btn-cap-siguiente").onclick = () => navegarCapitulo(1);
+            document.getElementById("selector-capitulos").onchange = (e) => cambiarCapituloPorSelector(e.target.value);
+        });
 
-        function ejecutarRegistroLocal() {
+        window.ejecutarRegistroLocal = function() {
             const usuario = document.getElementById("reg-usuario").value.trim();
             const pass = document.getElementById("reg-pass").value.trim();
 
             if (!usuario || !pass) return alert("Por favor rellena todos los campos.");
             if (pass.length < 6) return alert("La contraseña debe tener mínimo 6 caracteres.");
 
-            db.ref(`usuarios_locales/${usuario}`).once("value", snapshot => {
+            const userRef = ref(db, `usuarios_locales/${usuario}`);
+            get(userRef).then(snapshot => {
                 if (snapshot.exists()) {
                     alert("Este pseudónimo ya está registrado. Elige otro.");
                 } else {
-                    db.ref(`usuarios_locales/${usuario}`).set({
+                    set(userRef, {
                         username: usuario,
                         password: pass,
-                        fechaRegistro: firebase.database.ServerValue.TIMESTAMP
+                        fechaRegistro: Date.now()
                     }).then(() => {
                         alert("¡Cuenta creada con éxito! Ya puedes iniciar sesión.");
                         document.getElementById("reg-usuario").value = "";
@@ -809,15 +819,15 @@
                     });
                 }
             });
-        }
+        };
 
-        function ejecutarLoginLocal() {
+        window.ejecutarLoginLocal = function() {
             const usuario = document.getElementById("login-usuario").value.trim();
             const pass = document.getElementById("login-pass").value.trim();
 
             if (!usuario || !pass) return alert("Rellena todos los campos.");
 
-            db.ref(`usuarios_locales/${usuario}`).once("value", snapshot => {
+            get(ref(db, `usuarios_locales/${usuario}`)).then(snapshot => {
                 if (snapshot.exists() && snapshot.val().password === pass) {
                     usuarioLogueado = { displayName: usuario, uid: usuario };
                     localStorage.setItem("sakuba_user_local", JSON.stringify(usuarioLogueado));
@@ -830,14 +840,14 @@
                     alert("Usuario o contraseña incorrectos.");
                 }
             });
-        }
+        };
 
-        function cerrarSesionLocal() {
+        window.cerrarSesionLocal = function() {
             usuarioLogueado = null;
             localStorage.removeItem("sakuba_user_local");
             actualizarInterfazUsuario();
             mostrarVista('inicio');
-        }
+        };
 
         function actualizarInterfazUsuario() {
             const contenedorAuth = document.getElementById("bloque-autenticacion");
@@ -849,7 +859,7 @@
                     contenedorAuth.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:12px; font-weight:bold; color:var(--texto-oscuro);">${usuarioLogueado.displayName}</span>
-                            <a onclick="cerrarSesionLocal()" style="font-size:11px; color:var(--badge-finalizado); cursor:pointer; text-decoration:none;">Salir</a>
+                            <a onclick="window.cerrarSesionLocal()" style="font-size:11px; color:var(--badge-finalizado); cursor:pointer; text-decoration:none;">Salir</a>
                         </div>
                     `;
                 }
@@ -866,19 +876,18 @@
             const selector = document.getElementById("selector-mis-obras-publicadas");
             if (!selector) return;
             
-            db.ref("obras").once("value", snapshot => {
+            get(ref(db, "obras")).then(snapshot => {
                 let html = "";
-                snapshot.forEach(child => {
-                    const obra = child.val();
+                snapshot.forEach(childSnap => {
+                    const obra = childSnap.val();
                     if (usuarioLogueado && obra.autorId === usuarioLogueado.uid) {
-                        html += `<option value="${child.key}">${obra.titulo}</option>`;
+                        html += `<option value="${childSnap.key}">${obra.titulo}</option>`;
                     }
                 });
                 selector.innerHTML = html || `<option value="">No tienes novelas creadas</option>`;
             });
         }
-
-        function guardarNuevaObraEnNube() {
+                    function guardarNuevaObraEnNube() {
             if (!usuarioLogueado) return alert("Debes iniciar sesión para publicar.");
             
             const titulo = document.getElementById("crear-obra-titulo").value.trim();
@@ -887,8 +896,8 @@
 
             if (!titulo || !sinopsis) return alert("Por favor rellena todos los campos.");
 
-            const nuevaObraRef = db.ref("obras").push();
-            nuevaObraRef.set({
+            const nuevaObraRef = push(ref(db, "obras"));
+            set(nuevaObraRef, {
                 id: nuevaObraRef.key,
                 titulo: titulo,
                 autor: usuarioLogueado.displayName,
@@ -903,9 +912,8 @@
                 document.getElementById("crear-obra-sinopsis").value = "";
                 mostrarVista('inicio');
             });
-        }
-
-        function guardarNuevoCapituloEnNube() {
+                    }
+                    function guardarNuevoCapituloEnNube() {
             if (!usuarioLogueado) return alert("Debes iniciar sesión.");
             
             const obraId = document.getElementById("selector-mis-obras-publicadas").value;
@@ -914,10 +922,9 @@
 
             if (!obraId || !tituloCap || !contenidoCap) return alert("Rellena todos los campos.");
 
-            const obraRef = db.ref(`obras/${obraId}/capitulos`);
-            const nuevoCapRef = obraRef.push();
+            const nuevoCapRef = push(ref(db, `obras/${obraId}/capitulos`));
             
-            nuevoCapRef.set({
+            set(nuevoCapRef, {
                 id: nuevoCapRef.key,
                 titulo: tituloCap,
                 contenido: contenidoCap
@@ -927,30 +934,32 @@
                 document.getElementById("crear-cap-contenido").value = "";
                 mostrarVista('inicio');
             });
-        }
-                function escucharObrasDesdeNube() {
-            db.ref("obras").on("value", snapshot => {
+                }
+                    function escucharObrasDesdeNube() {
+            onValue(ref(db, "obras"), snapshot => {
                 OBRAS_GLOBAL = [];
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    const obra = {
-                        id: data.id,
-                        titulo: data.titulo,
-                        autor: data.autor,
-                        autorId: data.autorId,
-                        sinopsis: data.sinopsis,
-                        categorias: data.categorias || [],
-                        votos: data.votos || 0,
-                        mostrarEnInicio: data.mostrarEnInicio !== false,
-                        capitulos: []
-                    };
-                    if (data.capitulos) {
-                        Object.keys(data.capitulos).forEach(key => {
-                            obra.capitulos.push(data.capitulos[key]);
-                        });
-                    }
-                    OBRAS_GLOBAL.push(obra);
-                });
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnap => {
+                        const data = childSnap.val();
+                        const obra = {
+                            id: data.id,
+                            titulo: data.titulo,
+                            autor: data.autor,
+                            autorId: data.autorId,
+                            sinopsis: data.sinopsis,
+                            categorias: data.categorias || [],
+                            votos: data.votos || 0,
+                            mostrarEnInicio: data.mostrarEnInicio !== false,
+                            capitulos: []
+                        };
+                        if (data.capitulos) {
+                            Object.keys(data.capitulos).forEach(key => {
+                                obra.capitulos.push(data.capitulos[key]);
+                            });
+                        }
+                        OBRAS_GLOBAL.push(obra);
+                    });
+                }
                 if (obraActual) {
                     const actualizada = OBRAS_GLOBAL.find(o => o.id === obraActual.id);
                     if (actualizada) obraActual = actualizada;
@@ -960,34 +969,32 @@
                     verFichaObra(obraActual, false);
                 }
             });
-        }
-
-        function registrarVotoNovelaInSitu() {
+                    }
+                    function registrarVotoNovelaInSitu() {
             if (!usuarioLogueado) return alert("Debes iniciar sesión con tu cuenta para votar.");
             if (!obraActual) return;
 
-            const votoUsuarioRef = db.ref(`votos_usuarios/${usuarioLogueado.uid}/${obraActual.id}`);
-            votoUsuarioRef.once("value", snapshot => {
+            const votoUsuarioRef = ref(db, `votos_usuarios/${usuarioLogueado.uid}/${obraActual.id}`);
+            get(votoUsuarioRef).then(snapshot => {
                 if (snapshot.exists()) {
                     alert("Ya has votado por esta novela anteriormente.");
                 } else {
-                    votoUsuarioRef.set(true).then(() => {
+                    set(votoUsuarioRef, true).then(() => {
                         const nuevaCantidadVotos = (obraActual.votos || 0) + 1;
-                        db.ref(`obras/${obraActual.id}/votos`).set(nuevaCantidadVotos);
+                        set(ref(db, `obras/${obraActual.id}/votos`), nuevaCantidadVotos);
                     });
                 }
             });
-        }
-
-        function escucharComentariosEnNube(obraId, capId) {
+                    }
+                    function escucharComentariosEnNube(obraId, capId) {
             const feed = document.getElementById("feed-comentarios-capitulo");
             if (!feed) return;
 
-            db.ref(`comentarios/${obraId}/${capId}`).on("value", snapshot => {
+            onValue(ref(db, `comentarios/${obraId}/${capId}`), snapshot => {
                 feed.innerHTML = "";
                 if (snapshot.exists()) {
-                    snapshot.forEach(child => {
-                        const com = child.val();
+                    snapshot.forEach(childSnap => {
+                        const com = childSnap.val();
                         feed.innerHTML += `
                             <div class="comentario-item">
                                 <div class="comentario-autor">${com.usuario}</div>
@@ -1001,7 +1008,7 @@
             });
         }
 
-        function guardarNuevoComentarioEnNube() {
+        window.guardarNuevoComentarioEnNube = function() {
             if (!usuarioLogueado || !obraActual || !obraActual.capitulos[capituloActualIdx]) return;
             const areaTexto = document.getElementById("texto-nuevo-comentario");
             if (!areaTexto) return;
@@ -1009,16 +1016,16 @@
             if (!texto) return alert("El comentario no puede estar vacío.");
 
             const capId = obraActual.capitulos[capituloActualIdx].id || capituloActualIdx;
-            const nuevoComRef = db.ref(`comentarios/${obraActual.id}/${capId}`).push();
-            nuevoComRef.set({
+            const nuevoComRef = push(ref(db, `comentarios/${obraActual.id}/${capId}`));
+            set(nuevoComRef, {
                 usuario: usuarioLogueado.displayName,
                 texto: texto,
-                fecha: firebase.database.ServerValue.TIMESTAMP
+                fecha: Date.now()
             }).then(() => {
                 areaTexto.value = "";
             });
         }
-                function renderizarListasObras(obrasFiltradas = null) {
+                    function renderizarListasObras(obrasFiltradas = null) {
             const vistaInicio = document.getElementById("vista-inicio");
             if (!vistaInicio) return;
             const catalogo = obrasFiltradas || OBRAS_GLOBAL;
@@ -1031,11 +1038,15 @@
                         <div id="ranking-columna-derecha" class="obras-container"></div>
                     </div>
                     <div id="control-paginacion" style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--borde-gris);">
-                        <button id="btn-pag-anterior" onclick="cambiarPaginaRanking(-1)" class="btn-control" style="font-weight: bold; padding: 8px 16px;">← Anterior</button>
+                        <button id="btn-pag-anterior" class="btn-control" style="font-weight: bold; padding: 8px 16px;">← Anterior</button>
                         <span id="indicador-pagina" style="font-size: 13px; color: var(--texto-mutado); font-weight: bold;">Página 1</span>
-                        <button id="btn-pag-siguiente" onclick="cambiarPaginaRanking(1)" class="btn-control" style="font-weight: bold; padding: 8px 16px;">Siguiente →</button>
+                        <button id="btn-pag-siguiente" class="btn-control" style="font-weight: bold; padding: 8px 16px;">Siguiente →</button>
                     </div>
                 `;
+                
+                document.getElementById("btn-pag-anterior").onclick = () => cambiarPaginaRanking(-1);
+                document.getElementById("btn-pag-siguiente").onclick = () => cambiarPaginaRanking(1);
+
                 if (obrasFiltradas === null) {
                     catalogoRankingFiltrado = catalogo.filter(obra => (obra.votos || 0) >= 0).sort((a, b) => b.votos - a.votos);
                 } else {
@@ -1056,9 +1067,10 @@
                     const badgeClass = totalCaps > 1 ? "badge-emision" : "badge-finalizado";
                     const estadoAuto = totalCaps > 1 ? "En emisión" : "Finalizado";
                     const slugParaEnlace = generarSlug(obra.titulo);
+                    const idLink = `link-gen-${slugParaEnlace}`;
                     const obraHTML = `
                         <div class="obra-item" style="border-bottom: 1px solid #f4f4f4; padding-bottom: 15px; margin-bottom: 15px;">
-                            <a class="obra-titulo-link" onclick="buscarYVerFicha('${slugParaEnlace}')">${obra.titulo}</a>
+                            <a class="obra-titulo-link" id="${idLink}">${obra.titulo}</a>
                             <span class="ranking-estrellas">👍 ${obra.votos || 0}</span>
                             <span class="badge ${badgeClass}">${estadoAuto.toUpperCase()}</span>
                             <p class="obra-sinopsis-preview">${obra.sinopsis}</p>
@@ -1066,6 +1078,7 @@
                         </div>
                     `;
                     listaVertical.insertAdjacentHTML("beforeend", obraHTML);
+                    document.getElementById(idLink).onclick = () => buscarYVerFicha(slugParaEnlace);
                 });
                 if (listaVertical.innerHTML === "") {
                     listaVertical.innerHTML = `<p class='obra-sinopsis-preview' style='padding: 20px 0;'>Próximamente se añadirán obras de ${categoriaFiltroActual}.</p>`;
@@ -1088,9 +1101,10 @@
                 const badgeClass = totalCaps > 1 ? "badge-emision" : "badge-finalizado";
                 const estadoAuto = totalCaps > 1 ? "En emisión" : "Finalizado";
                 const slugParaEnlace = generarSlug(obra.titulo);
+                const idLink = `link-rank-${slugParaEnlace}`;
                 const obraHTML = `
                     <div class="obra-item">
-                        <a class="obra-titulo-link" onclick="buscarYVerFicha('${slugParaEnlace}')">${obra.titulo}</a>
+                        <a class="obra-titulo-link" id="${idLink}">${obra.titulo}</a>
                         <span class="ranking-estrellas">👍 ${obra.votos || 0}</span>
                         <span class="badge ${badgeClass}">${estadoAuto.toUpperCase()}</span>
                         <p class="obra-sinopsis-preview">${obra.sinopsis}</p>
@@ -1098,6 +1112,7 @@
                     </div>
                 `;
                 if (index < 5) { colIzquierda.insertAdjacentHTML("beforeend", obraHTML); } else { colDerecha.insertAdjacentHTML("beforeend", obraHTML); }
+                document.getElementById(idLink).onclick = () => buscarYVerFicha(slugParaEnlace);
             });
             if (colIzquierda.innerHTML === "") colIzquierda.innerHTML = "<p class='obra-sinopsis-preview'>No hay obras clasificadas.</p>";
             const elIndicador = document.getElementById("indicador-pagina");
@@ -1116,8 +1131,8 @@
                 inyectarObrasPaginaRanking();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        }
-                function mostrarVista(vistaId) {
+                                                                       }
+                    window.mostrarVista = function(vistaId) {
             document.querySelectorAll(".vista-seccion").forEach(seccion => { seccion.classList.remove("active"); });
             if (vistaId === 'inicio') {
                 categoriaFiltroActual = "Todos";
@@ -1135,14 +1150,14 @@
                 if (vistaObjetivo) vistaObjetivo.classList.add("active");
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        };
 
-        function filtrarPorCategoria(categoria) {
+        window.filtrarPorCategoria = function(categoria) {
             categoriaFiltroActual = categoria;
             actualizarTabsCategorias(categoria);
             mostrarVista('categorias');
             renderizarListasObras();
-        }
+        };
 
         function actualizarTabsCategorias(categoriaActiva) {
             const botones = document.querySelectorAll(".sub-nav-container .sub-tab");
@@ -1155,7 +1170,7 @@
             });
         }
 
-        function ejecutarBusqueda() {
+        window.ejecutarBusqueda = function() {
             const inputElement = document.getElementById("input-busqueda");
             if (!inputElement) return;
             const termino = inputElement.value.trim().toLowerCase();
@@ -1167,14 +1182,13 @@
             actualizarTabsCategorias("Todos");
             mostrarVista('inicio');
             renderizarListasObras(resultados);
-        }
+        };
 
         function buscarYVerFicha(slugObra) {
             const obra = OBRAS_GLOBAL.find(o => generarSlug(o.titulo) === slugObra);
             if (obra) verFichaObra(obra, true);
         }
-
-        function verFichaObra(obra, actualizarHistorial = true) {
+                    function verFichaObra(obra, actualizarHistorial = true) {
             obraActual = obra;
             document.getElementById("ficha-titulo").textContent = obra.titulo;
             document.getElementById("ficha-autor").textContent = obra.autor;
@@ -1193,20 +1207,34 @@
             const contenedorTags = document.getElementById("ficha-categorias");
             if (contenedorTags) contenedorTags.innerHTML = obra.categorias.map(cat => `<span class="badge-tag">${cat}</span>`).join("");
 
+            const btnVoto = document.getElementById("btn-accion-votar");
+            if (btnVoto) btnVoto.onclick = registrarVotoNovelaInSitu;
+
             const contenedorCapitulos = document.getElementById("ficha-lista-capitulos");
             if (contenedorCapitulos) {
                 let htmlCapitulos = "";
                 const slugObra = generarSlug(obra.titulo);
                 const progresoGuardado = localStorage.getItem(`sakuba_progreso_v2_${slugObra}`);
+                
                 if (progresoGuardado !== null) {
                     const capIdx = parseInt(progresoGuardado);
                     if (obra.capitulos[capIdx]) {
-                        htmlCapitulos += `<div class="capitulo-link-item" onclick="abrirLector(${capIdx})" style="background-color: #eef7fc; border: 1px solid var(--azul-principal); font-weight: bold; margin-bottom: 15px;">🔖 Continuar leyendo: ${obra.capitulos[capIdx].titulo}</div><hr style="border: 0; height: 1px; background: #e0e0e0; margin-bottom: 15px;">`;
+                        htmlCapitulos += `<div class="capitulo-link-item" id="btn-reanudacion-lectura" style="background-color: #eef7fc; border: 1px solid var(--azul-principal); font-weight: bold; margin-bottom: 15px;">🔖 Continuar leyendo: ${obra.capitulos[capIdx].titulo}</div><hr style="border: 0; height: 1px; background: #e0e0e0; margin-bottom: 15px;">`;
                     }
                 }
+                
                 if (obra.capitulos.length > 0) {
-                    htmlCapitulos += obra.capitulos.map((cap, index) => `<div class="capitulo-link-item" onclick="abrirLector(${index})">${cap.titulo}</div>`).join("");
+                    obra.capitulos.forEach((cap, index) => {
+                        htmlCapitulos += `<div class="capitulo-link-item" id="link-cap-${index}">${cap.titulo}</div>`;
+                    });
                     contenedorCapitulos.innerHTML = htmlCapitulos;
+                    
+                    if (document.getElementById("btn-reanudacion-lectura")) {
+                        document.getElementById("btn-reanudacion-lectura").onclick = () => abrirLector(parseInt(progresoGuardado));
+                    }
+                    obra.capitulos.forEach((cap, index) => {
+                        document.getElementById(`link-cap-${index}`).onclick = () => abrirLector(index);
+                    });
                 } else {
                     contenedorCapitulos.innerHTML = "<p class='obra-sinopsis-preview' style='padding:10px;'>Esta obra aún no tiene capítulos.</p>";
                 }
@@ -1239,7 +1267,8 @@
             const cajaComentarioForm = document.getElementById("contenedor-formulario-comentario");
             if (cajaComentarioForm) {
                 if (usuarioLogueado) {
-                    cajaComentarioForm.innerHTML = `<div class="form-comentario"><textarea id="texto-nuevo-comentario" placeholder="Escribe tu comentario respetuoso sobre este capítulo..."></textarea><button class="btn-guardar" style="align-self: flex-end; padding:6px 14px; font-size:12px;" onclick="guardarNuevoComentarioEnNube()">Enviar comentario</button></div>`;
+                    cajaComentarioForm.innerHTML = `<div class="form-comentario"><textarea id="texto-nuevo-comentario" placeholder="Escribe tu comentario respetuoso sobre este capítulo..."></textarea><button class="btn-guardar" id="btn-enviar-comentario-form" style="align-self: flex-end; padding:6px 14px; font-size:12px;">Enviar comentario</button></div>`;
+                    document.getElementById("btn-enviar-comentario-form").onclick = window.guardarNuevoComentarioEnNube;
                 } else {
                     cajaComentarioForm.innerHTML = `<p style="font-size:12px; color:var(--texto-mutado); margin-bottom:15px;">Debes iniciar sesión para dejar un comentario en este capítulo.</p>`;
                 }
@@ -1261,6 +1290,8 @@
         function navegarCapitulo(direccion) { const nuevoIndex = capituloActualIdx + direccion; if (obraActual && nuevoIndex >= 0 && nuevoIndex < obraActual.capitulos.length) abrirLector(nuevoIndex); }
         function volverAFicha() { if (obraActual) { buscarYVerFicha(generarSlug(obraActual.titulo)); } else { mostrarVista('inicio'); } }
         function cerrarPopupBienvenida() { const modal = document.getElementById("popup-bienvenida"); if (modal) modal.classList.remove("active"); }
+
+        window.cerrarPopupBienvenida = cerrarPopupBienvenida;
 
         document.addEventListener('contextmenu', e => e.preventDefault(), false);
         document.addEventListener('keydown', e => {
