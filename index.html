@@ -4,26 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAKUBA - Hoshikari Corporation</title>
+    <link rel="stylesheet" href="estilos.css">
     <script src="https://jsdelivr.net"></script>
-    <style>
-        body { font-family: sans-serif; background-color: #121212; color: #ffffff; padding: 20px; margin: 0; }
-        .seccion { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #2d2d2d; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; background: #2d2d2d; color: #fff; border: 1px solid #444; border-radius: 4px; box-sizing: border-box; }
-        button { background: #00b4d8; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; margin: 5px 0; }
-        button:hover { background: #0077b6; }
-        .oculto { display: none; }
-        .parrafo-contenedor { position: relative; margin-bottom: 15px; padding: 10px; border-radius: 4px; }
-        .parrafo-contenedor:hover { background: #1a1a1a; }
-        .btn-comentario-parrafo { background: #333; color: #aaa; width: auto; padding: 4px 8px; font-size: 11px; border-radius: 3px; cursor: pointer; display: inline-block; margin-top: 5px; }
-        .lista-comentarios { background: #151515; padding: 10px; margin-top: 5px; border-radius: 4px; font-size: 13px; max-height: 150px; overflow-y: auto; }
-        .comentario-item { border-bottom: 1px solid #222; padding: 5px 0; }
-        .comentario-item:last-child { border: none; }
-    </style>
 </head>
 <body>
+
     <h1 style="color: #00b4d8; text-align: center;">SAKUBA</h1>
     <div id="estado-conexion" style="text-align: center; margin-bottom: 20px; font-size: 14px; color: #aaa;"></div>
-        <div id="bloque-auth" class="seccion">
+
+    <div id="bloque-auth" class="seccion">
         <h2>Acceso a la Plataforma</h2>
         <input type="email" id="auth-email" placeholder="Correo electrónico">
         <input type="password" id="auth-password" placeholder="Contraseña">
@@ -37,64 +26,7 @@
         <button onclick="cerrarSesion()" style="background: #e63946;">Cerrar Sesión</button>
     </div>
 
-    <script>
-        const SUPABASE_URL = "https://supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_rCxELX-xWf2kvltmbybihg_2dnvzI7a";
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        async function verificarSesion() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error) {
-                document.getElementById('estado-conexion').innerText = "Error de enlace.";
-                return;
-            }
-            document.getElementById('estado-conexion').innerText = "Hoshikari Cloud Conectado";
-            actualizarInterfaz(session);
-            cargarTodasLasNovelas();
-        }
-
-        function actualizarInterfaz(session) {
-            if (session) {
-                document.getElementById('bloque-auth').classList.add('oculto');
-                document.getElementById('bloque-usuario').classList.remove('oculto');
-                document.getElementById('bloque-crear-novela').classList.remove('oculto');
-                document.getElementById('bloque-crear-capitulo').classList.remove('oculto');
-                document.getElementById('user-email').innerText = session.user.email;
-                cargarNovelasAutor(session.user.id);
-            } else {
-                document.getElementById('bloque-auth').classList.remove('oculto');
-                document.getElementById('bloque-usuario').classList.add('oculto');
-                document.getElementById('bloque-crear-novela').classList.add('oculto');
-                document.getElementById('bloque-crear-capitulo').classList.add('oculto');
-            }
-        }
-
-        async function registrarUsuario() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            if (error) alert(error.message);
-            else alert("Verifica tu correo para confirmar cuenta.");
-        }
-
-        async function iniciarSesion() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-            else {
-                actualizarInterfaz(data.session);
-                cargarTodasLasNovelas();
-            }
-        }
-
-        async function cerrarSesion() {
-            await supabase.auth.signOut();
-            actualizarInterfaz(null);
-            cargarTodasLasNovelas();
-        }
-            <div id="bloque-crear-novela" class="seccion oculto">
+    <div id="bloque-crear-novela" class="seccion oculto">
         <h2>Publicar Nueva Novela</h2>
         <input type="text" id="novela-titulo" placeholder="Título de la Obra">
         <textarea id="novela-sinopsis" rows="3" placeholder="Sinopsis..."></textarea>
@@ -116,63 +48,7 @@
         <div id="lista-capitulos-autor" style="margin-top: 15px; font-size: 14px; color: #aaa;"></div>
     </div>
 
-    <script>
-        async function publicarNovela() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return;
-            const title = document.getElementById('novela-titulo').value;
-            const synopsis = document.getElementById('novela-sinopsis').value;
-            const status = document.getElementById('novela-status').value;
-            const genres = document.getElementById('novela-generos').value.split(',').map(g => g.trim());
-            const { error } = await supabase.from('novels').insert([{ author_id: session.user.id, title, synopsis, status, genres }]);
-            if (error) alert(error.message);
-            else {
-                alert("Obra creada.");
-                document.getElementById('novela-titulo').value = "";
-                document.getElementById('novela-sinopsis').value = "";
-                document.getElementById('novela-generos').value = "";
-                cargarNovelasAutor(session.user.id);
-                cargarTodasLasNovelas();
-            }
-        }
-
-        async function cargarNovelasAutor(authorId) {
-            const { data, error } = await supabase.from('novels').select('id, title').eq('author_id', authorId);
-            if (!error) {
-                const select = document.getElementById('select-novelas-autor');
-                select.innerHTML = '<option value="">-- Selecciona tu novela --</option>';
-                data.forEach(n => select.innerHTML += `<option value="${n.id}">${n.title}</option>`);
-            }
-        }
-
-        async function cargarCapitulosAutor() {
-            const novelId = document.getElementById('select-novelas-autor').value;
-            if (!novelId) return;
-            const { data, error } = await supabase.from('chapters').select('chapter_number, title').eq('novel_id', novelId).order('chapter_number', { ascending: true });
-            if (!error) {
-                const div = document.getElementById('lista-capitulos-autor');
-                div.innerHTML = "<strong>Capítulos actuales:</strong><br>";
-                data.forEach(c => div.innerHTML += `Cap. ${c.chapter_number} - ${c.title}<br>`);
-            }
-        }
-
-        async function publicarCapitulo() {
-            const novel_id = document.getElementById('select-novelas-autor').value;
-            const chapter_number = parseInt(document.getElementById('capitulo-numero').value);
-            const title = document.getElementById('capitulo-titulo').value;
-            const content = document.getElementById('capitulo-contenido').value;
-            if (!novel_id || !chapter_number || !title || !content) { alert("Completa todos los campos."); return; }
-            const { error } = await supabase.from('chapters').insert([{ novel_id, chapter_number, title, content }]);
-            if (error) alert(error.message);
-            else {
-                alert("Capítulo subido.");
-                document.getElementById('capitulo-numero').value = "";
-                document.getElementById('capitulo-titulo').value = "";
-                document.getElementById('capitulo-contenido').value = "";
-                cargarCapitulosAutor();
-            }
-        }
-            <div id="bloque-lector" class="seccion">
+    <div id="bloque-lector" class="seccion">
         <h2>Biblioteca de Lectura</h2>
         <select id="select-novelas-todas" onchange="cargarCapitulosNovela()"></select>
         <select id="select-capitulos-lectura" onchange="leerCapitulo()" class="oculto"></select>
@@ -182,100 +58,6 @@
         </div>
     </div>
 
-    <script>
-        async function cargarTodasLasNovelas() {
-            const { data, error } = await supabase.from('novels').select('id, title');
-            if (!error) {
-                const select = document.getElementById('select-novelas-todas');
-                select.innerHTML = '<option value="">-- Elige una Novela para Leer --</option>';
-                data.forEach(n => select.innerHTML += `<option value="${n.id}">${n.title}</option>`);
-            }
-        }
-
-        async function cargarCapitulosNovela() {
-            const novelId = document.getElementById('select-novelas-todas').value;
-            const selectCaps = document.getElementById('select-capitulos-lectura');
-            if (!novelId) { selectCaps.classList.add('oculto'); return; }
-            const { data, error } = await supabase.from('chapters').select('id, chapter_number, title').eq('novel_id', novelId).order('chapter_number', { ascending: true });
-            if (!error && data.length > 0) {
-                selectCaps.innerHTML = '<option value="">-- Elige el Capítulo --</option>';
-                data.forEach(c => selectCaps.innerHTML += `<option value="${c.id}">Cap. ${c.chapter_number} - ${c.title}</option>`);
-                selectCaps.classList.remove('oculto');
-            } else {
-                selectCaps.classList.add('oculto');
-                document.getElementById('pantalla-lectura').classList.add('oculto');
-            }
-        }
-
-        async function leerCapitulo() {
-            const chapterId = document.getElementById('select-capitulos-lectura').value;
-            if (!chapterId) return;
-            const { data, error } = await supabase.from('chapters').select('title, content').eq('id', chapterId).single();
-            if (!error && data) {
-                document.getElementById('lectura-titulo-capitulo').innerText = data.title;
-                const contenedorCuerpo = document.getElementById('lectura-cuerpo');
-                contenedorCuerpo.innerHTML = "";
-                const parrafos = data.content.split(/\n\s*\n/);
-                parrafos.forEach((textoParrafo, index) => {
-                    if (textoParrafo.trim() !== "") {
-                        const divParrafo = document.createElement('div');
-                        divParrafo.className = "parrafo-contenedor";
-                        divParrafo.setAttribute('data-index', index);
-                        divParrafo.innerHTML = `
-                            <p style="margin:0;">${textoParrafo.replace(/\n/g, '<br>')}</p>
-                            <span class="btn-comentario-parrafo" onclick="toggleComentarios('${chapterId}', ${index})">💬 Comentarios</span>
-                            <div id="comentarios-p-${index}" class="lista-comentarios oculto"></div>
-                        `;
-                        contenedorCuerpo.appendChild(divParrafo);
-                    }
-                });
-                document.getElementById('pantalla-lectura').classList.remove('oculto');
-            }
-        }
-
-        async function toggleComentarios(chapterId, paragraphIndex) {
-            const divComentarios = document.getElementById(`comentarios-p-${paragraphIndex}`);
-            if (!divComentarios.classList.contains('oculto')) {
-                divComentarios.classList.add('oculto');
-                return;
-            }
-            divComentarios.classList.remove('oculto');
-            divComentarios.innerHTML = "Cargando aportes...";
-            const { data, error } = await supabase.from('comments').select('content, created_at').eq('chapter_id', chapterId).eq('paragraph_index', paragraphIndex).order('created_at', { ascending: true });
-            divComentarios.innerHTML = "";
-            if (!error && data.length > 0) {
-                data.forEach(c => divComentarios.innerHTML += `<div class="comentario-item">${c.content}</div>`);
-            } else {
-                divComentarios.innerHTML = "<div style='color:#666;'>Sin interacciones aún.</div>";
-            }
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                divComentarios.innerHTML += `
-                    <div style="margin-top:8px; display:flex; gap:5px;">
-                        <input type="text" id="nuevo-txt-${paragraphIndex}" placeholder="Reacciona aquí..." style="margin:0; padding:6px; font-size:12px;">
-                        <button onclick="enviarComentario('${chapterId}', ${paragraphIndex})" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">Enviar</button>
-                    </div>
-                `;
-            }
-        }
-
-        async function enviarComentario(chapterId, paragraphIndex) {
-            const input = document.getElementById(`nuevo-txt-${paragraphIndex}`);
-            const content = input.value.trim();
-            if (!content) return;
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return;
-            const { error } = await supabase.from('comments').insert([{ chapter_id: chapterId, user_id: session.user.id, content, paragraph_index: paragraphIndex }]);
-            if (error) alert(error.message);
-            else {
-                input.value = "";
-                const divComentarios = document.getElementById(`comentarios-p-${paragraphIndex}`);
-                divComentarios.classList.add('oculto');
-                toggleComentarios(chapterId, paragraphIndex);
-            }
-        }
-
-        verificarSesion();
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
