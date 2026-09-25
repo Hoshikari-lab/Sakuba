@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#005691">
+<title>SAKUBA - Hoshikari Editorial</title>
+<style>
+:root{
+  --azul:#005691;--azul2:#0077b6;--azul3:#eaf5fb;--texto:#20252b;--muted:#68727d;
+  --fondo:#f4f7fa;--card:#fff;--borde:#dfe5ea;--oro:#f2b01e;--verde:#168447;
+  --sombra:0 8px 30px rgba(0,30,60,.08);--radio:14px
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--fondo);color:var(--texto)}
+button,input{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.header-top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 5%;background:#fff;border-bottom:1px solid var(--borde)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo-sakuba{font-size:30px;font-weight:800;letter-spacing:.5px;color:var(--azul)}
+.logo-sub{font-size:12px;color:var(--muted);border-left:1px solid var(--borde);padding-left:14px}
+.header-links{display:flex;gap:8px}
+.header-links button{background:transparent;border:0;color:var(--azul);padding:8px 10px;border-radius:8px}
+.header-links button:hover{background:var(--azul3)}
+.navbar-azul{position:sticky;top:0;z-index:20;background:rgba(0,86,145,.96);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 5%;box-shadow:0 4px 18px rgba(0,0,0,.12)}
+.nav-links{display:flex;gap:3px;flex-wrap:wrap}
+.nav-links button{background:transparent;border:0;color:#fff;padding:9px 12px;border-radius:9px;font-size:14px}
+.nav-links button:hover,.nav-links button.activo{background:rgba(255,255,255,.14)}
+.search-box{display:flex;gap:6px;min-width:260px}
+.search-box input{width:100%;padding:9px 12px;border:0;border-radius:9px;outline:0}
+.search-box button{border:0;background:#fff;color:var(--azul);font-weight:700;padding:9px 13px;border-radius:9px}
+.barra-categories{background:#fff;padding:10px 5%;border-bottom:1px solid var(--borde);display:flex;gap:7px;overflow-x:auto}
+.btn-cat{background:#fff;border:1px solid #ccd5dd;padding:7px 12px;border-radius:999px;font-size:13px;color:#47515b;white-space:nowrap;transition:.2s}
+.btn-cat:hover{transform:translateY(-1px);border-color:var(--azul)}
+.btn-cat.activo{background:var(--azul);color:#fff;border-color:var(--azul)}
+.contenedor-principal{max-width:1180px;margin:0 auto;padding:30px 20px 70px}
+.hero{background:linear-gradient(135deg,#004a7c,#0082bd);color:#fff;border-radius:20px;padding:32px;margin-bottom:30px;box-shadow:var(--sombra);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border:45px solid rgba(255,255,255,.08);border-radius:50%;right:-80px;top:-100px}
+.hero h1{margin:0 0 8px;font-size:32px}
+.hero p{margin:0;max-width:700px;line-height:1.6;color:rgba(255,255,255,.9)}
+.titulo-seccion{font-size:18px;font-weight:800;border-bottom:2px solid var(--azul);padding-bottom:9px;margin:26px 0 18px}
+.grid-obras{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.tarjeta-obra{background:var(--card);border:1px solid var(--borde);padding:18px;border-radius:var(--radio);box-shadow:0 2px 8px rgba(0,0,0,.03);transition:transform .25s,box-shadow .25s,border-color .25s;animation:entrada .45s both}
+.tarjeta-obra:hover{transform:translateY(-4px);box-shadow:var(--sombra);border-color:#b9d7e8}
+.obra-cabecera{display:flex;gap:14px}
+.portada{width:86px;height:120px;flex:none;border-radius:10px;object-fit:cover;background:linear-gradient(135deg,#d9e9f2,#eef5f8);box-shadow:0 5px 14px rgba(0,0,0,.14)}
+.portada-placeholder{width:86px;height:120px;border-radius:10px;background:linear-gradient(135deg,#00679f,#0a9bc7);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:12px;padding:8px}
+.obra-info{min-width:0;flex:1}
+.obra-titulo{font-size:17px;font-weight:800;color:var(--azul);cursor:pointer;display:inline-block;margin-bottom:7px}
+.obra-titulo:hover{text-decoration:underline}
+.badge-status{display:inline-block;font-size:10px;font-weight:800;color:#fff;padding:4px 7px;border-radius:999px;margin-left:5px;vertical-align:middle}
+.status-emision{background:var(--verde)}.status-finalizado{background:#9d2f3e}
+.estrellas-ranking{color:var(--oro);font-weight:800;font-size:14px}
+.obra-sinopsis{font-size:13px;color:#59636d;line-height:1.55;margin:12px 0 9px}
+.obra-meta{font-size:12px;color:#87919b}
+.acciones-obra{display:flex;gap:7px;margin-top:13px}
+.btn-accion{border:1px solid var(--borde);background:#fff;color:var(--azul);padding:7px 10px;border-radius:8px;font-weight:700;font-size:12px}
+.btn-accion:hover{background:var(--azul3)}
+.btn-favorito.activo{background:#fff5d7;border-color:#f3d37a;color:#8b6500}
+.ficha-detalles,.pantalla-texto{background:#fff;border:1px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra)}
+.ficha-detalles{padding:26px}
+.ficha-hero{display:flex;gap:22px;align-items:flex-start}
+.ficha-portada{width:160px;max-width:35%;height:230px;object-fit:cover;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+.ficha-titulo{font-size:30px;margin:0 0 8px}.ficha-autor{color:var(--muted);margin-bottom:12px}
+.caja-sinopsis{background:#f8fafc;border:1px solid #e8edf1;padding:15px;border-radius:10px;line-height:1.65;color:#505a64;margin:16px 0}
+.link-capitulo{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--borde);padding:13px 15px;margin-bottom:8px;border-radius:9px;color:var(--azul);cursor:pointer;transition:.2s}
+.link-capitulo:hover{background:var(--azul3);transform:translateX(3px)}
+.reader-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+.reader-tools-group{display:flex;gap:6px}
+.btn-fuente{background:#fff;border:1px solid var(--borde);padding:8px 12px;border-radius:8px;font-weight:700;color:var(--azul)}
+.pantalla-texto{padding:clamp(20px,5vw,50px);line-height:1.85;font-size:18px;max-width:900px;margin:auto}
+.pantalla-texto h1{text-align:center;font-size:25px;margin-top:0}.pantalla-texto hr{border:0;border-top:1px solid var(--borde);margin:20px 0 30px}
+.pantalla-texto p{margin:0 0 20px}
+.lectura-footer{display:flex;justify-content:space-between;gap:12px;margin:22px auto;max-width:900px}
+.btn-nav-cap{background:#fff;border:1px solid var(--azul);color:var(--azul);padding:10px 18px;border-radius:9px;font-weight:700}
+.btn-nav-cap:hover:not(:disabled){background:var(--azul);color:#fff}
+.btn-nav-cap:disabled{border-color:#ccd2d8;color:#aeb5bb;cursor:not-allowed}
+.barra-progreso{height:5px;background:#e6ebef;border-radius:99px;overflow:hidden;margin:10px 0 20px}
+.barra-progreso span{display:block;height:100%;background:var(--azul2);transition:width .35s}
+.paginacion{display:flex;justify-content:center;gap:7px;margin:24px 0}
+.btn-pag{background:#fff;border:1px solid var(--borde);padding:7px 12px;border-radius:8px;color:#53606b}
+.empty{padding:35px;text-align:center;color:var(--muted);background:#fff;border:1px dashed #ccd5dc;border-radius:12px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#202830;color:#fff;padding:11px 16px;border-radius:10px;z-index:50;pointer-events:none;transition:.25s}
+.toast.visible{opacity:1;transform:translate(-50%,0)}
+.back{margin-bottom:15px}
+footer{background:#fff;border-top:1px solid var(--borde);padding:25px 5%;text-align:center;color:#7a858e;font-size:12px}
+@keyframes entrada{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes aparecer{from{opacity:0}to{opacity:1}}
+.vista{animation:aparecer .3s ease}
+@media(max-width:720px){
+ .header-top{align-items:flex-start;padding:12px 4%}.logo-sub{display:none}.header-links{display:none}
+ .navbar-azul{padding:8px 4%;align-items:stretch;flex-direction:column}.search-box{min-width:0}
+ .nav-links{justify-content:center}.contenedor-principal{padding:20px 12px 50px}.hero{padding:24px}.hero h1{font-size:25px}
+ .grid-obras{grid-template-columns:1fr}.ficha-hero{flex-direction:column}.ficha-portada{max-width:none;width:130px;height:190px}.ficha-titulo{font-size:24px}
+ .lectura-footer{flex-direction:column}.btn-nav-cap{width:100%}
+}
+</style>
+</head>
+<body>
+<header class="header-top">
+  <div class="brand">
+    <a href="#" class="logo-sakuba" onclick="mostrarInicio();return false;">SAKUBA</a>
+    <span class="logo-sub">Publicación y lectura de novelas ligeras en español</span>
+  </div>
+  <div class="header-links">
+    <button onclick="mostrarFavoritos()">★ Favoritos</button>
+    <button onclick="mostrarHistorial()">◷ Historial</button>
+  </div>
+</header>
+
+<nav class="navbar-azul">
+  <div class="nav-links">
+    <button onclick="mostrarInicio()">Inicio</button>
+    <button onclick="mostrarFavoritos()">Marcadores</button>
+    <button onclick="mostrarHistorial()">Historial</button>
+    <button onclick="mostrarInicio()">Categorías</button>
+  </div>
+  <div class="search-box">
+    <input type="text" id="input-buscar" placeholder="Buscar obras, autores o géneros..." onkeydown="if(event.key==='Enter')buscarObra()">
+    <button onclick="buscarObra()">Buscar</button>
+  </div>
+</nav>
+
+<div class="barra-categories">
+  <button class="btn-cat activo" onclick="filtrarCategoria('Todos')">En general</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Isekai')">Isekai</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Fantasía')">Fantasía</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Romance')">Romance</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Ciencia ficción')">Ciencia ficción</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Recuentos de la vida')">Recuentos de la vida</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Acción')">Acción</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Comedia')">Comedia</button>
+  <button class="btn-cat" onclick="filtrarCategoria('Drama')">Drama</button>
+</div>
+
+<main class="contenedor-principal">
+  <section id="vista-lista-obras" class="vista">
+    <div class="hero">
+      <h1>SAKUBA</h1>
+      <p>La plataforma de publicación y lectura de novelas ligeras en español de Hoshikari Editorial.</p>
+    </div>
+    <div class="titulo-seccion" id="texto-titulo-principal">Obras con mejor clasificación de la editorial</div>
+    <div id="lista-obras-target" class="grid-obras"></div>
+    <div class="paginacion">
+      <button class="btn-pag" disabled>← Anterior</button>
+      <button class="btn-pag" style="background:#005691;color:#fff">Página 1</button>
+      <button class="btn-pag" disabled>Siguiente →</button>
+    </div>
+  </section>
+
+  <section id="vista-ficha-obra" class="vista" style="display:none">
+    <button class="btn-cat back" onclick="mostrarInicio()">← Volver al catálogo</button>
+    <div class="ficha-detalles">
+      <div class="ficha-hero">
+        <div id="ficha-portada"></div>
+        <div style="flex:1">
+          <h1 class="ficha-titulo" id="ficha-titulo-obra"></h1>
+          <div class="ficha-autor" id="ficha-autor-obra"></div>
+          <div id="ficha-badge-status"></div>
+          <div id="ficha-ranking-obra" style="margin:10px 0"></div>
+          <div id="ficha-generos-obra"></div>
+        </div>
+      </div>
+      <div id="caja-marcador-continuar" style="margin-top:20px"></div>
+      <div class="titulo-seccion">Sinopsis</div>
+      <div class="caja-sinopsis" id="ficha-sinopsis-obra"></div>
+      <div class="titulo-seccion">Índice de capítulos</div>
+      <div id="ficha-lista-capitulos"></div>
+    </div>
+  </section>
+
+  <section id="vista-lectura-capitulo" class="vista" style="display:none">
+    <div class="reader-tools">
+      <button class="btn-cat" id="btn-regresar-ficha">← Ficha de la obra</button>
+      <div class="reader-tools-group">
+        <button class="btn-fuente" onclick="cambiarFuente(-2)">A−</button>
+        <button class="btn-fuente" onclick="restablecerFuente()">A</button>
+        <button class="btn-fuente" onclick="cambiarFuente(2)">A+</button>
+      </div>
+    </div>
+    <div class="barra-progreso"><span id="progreso-lectura" style="width:0%"></span></div>
+    <article class="pantalla-texto">
+      <h1 id="lectura-titulo-cap"></h1>
+      <hr>
+      <div id="lectura-contenido-texto"></div>
+    </article>
+    <div class="lectura-footer">
+      <button class="btn-nav-cap" id="btn-cap-anterior">← Capítulo anterior</button>
+      <button class="btn-nav-cap" id="btn-cap-siguiente">Capítulo siguiente →</button>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast"></div>
+<footer>SAKUBA — Hoshikari Editorial · Plataforma de publicación y lectura de novelas ligeras en español</footer>
+
+<script>
+const CATALOGO_NOVELAS = [
+                    {
+                id: "el-camino-del-heroe-isekai",
+                titulo: "El Camino del Héroe Isekai",
+                autor: "Nombre_Autor_1",
+                status: "EN EMISIÓN",
+                estrellas: 5,
+                generos: ["Isekai", "Fantasía", "Acción"],
+                sinopsis: "Un joven común es transportado inesperadamente a un místico mundo de fantasía medieval. Allí descubrirá que posee una afinidad sin precedentes con la magia elemental de los antiguos, viéndose obligado a aprender rápidamente a dominar sus nuevos poderes para sobrevivir en un entorno hostil y encontrar un camino de regreso a su hogar natal.",
+                capitulos: [
+                    { numero: 1, titulo: "Capítulo 1: El despertar en el nuevo mundo", contenido: "Esta es la primera línea del capítulo uno que la editorial Hoshikari ha guardado de forma directa. El protagonista abre los ojos en una pradera desconocida bajo un cielo de dos lunas.\n\nSe levanta con el corazón acelerado, dándose cuenta de que ya no se encuentra en su ciudad natal, sino en las místicas tierras de un mundo de fantasía medieval." },
+                    { numero: 2, titulo: "Capítulo 2: El primer encuentro con la magia", contenido: "Extender la mano hacia adelante requería una fuerza de voluntad descomunal. El aire a su alrededor comenzó a vibrar con una intensidad electrizante, manifestando pequeñas esferas de luz azulina que orbitaban suavemente alrededor de sus dedos.\n\nSintió un torrente cálido recorrer sus venas, una energía antigua y pura que respondía directamente a sus pensamientos más profundos. Los textos sagrados de este mundo lo llamaban 'Mana', pero para él, era la única herramienta que le garantizaría la supervivencia en este vasto e explorado continente." }
+                ]
+            },
+                        {
+                id: "cronicas-de-un-cuento-corto",
+                titulo: "Crónicas de un Cuento Corto",
+                autor: "Nombre_Autor_2",
+                status: "FINALIZADO",
+                estrellas: 1,
+                generos: ["Recuentos de la vida", "Drama"],
+                sinopsis: "Una historia breve y conmovedora sobre la melancolía del invierno y los recuerdos perdidos en una pequeña y acogedora cafetería en el corazón de la gran ciudad.",
+                capitulos: [
+                    { numero: 1, titulo: "Capítulo 1: La cafetería del invierno", contenido: "El aroma a café recién molido inundaba el rincón más apartado de la pequeña estancia mientras la nieve golpeaba con suavidad el cristal de la ventana.\n\nPara el autor, cada taza servida guardaba un fragmento del pasado de la gran urbe." }
+                ]
+            }
+        ];
+let novelaActiva=null;
+let indiceCapituloActual=0;
+let tamanoFuente=18;
+let categoriaFiltrada="Todos";
+let modoVista="catalogo";
+
+function escaparHTML(s){
+  return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function portadaHTML(obra,clase="portada"){
+  if(obra.portada){
+    return `<img class="${clase}" src="${escaparHTML(obra.portada)}" alt="Portada de ${escaparHTML(obra.titulo)}" onerror="this.outerHTML='<div class="portada-placeholder">SAKUBA</div>'">`;
+  }
+  return `<div class="portada-placeholder">SAKUBA</div>`;
+}
+function estrellas(n){
+  let r="";for(let i=1;i<=5;i++)r+=i<=n?"★":"☆";return r;
+}
+function getFavoritos(){return JSON.parse(localStorage.getItem("sakuba_favoritos")||"[]")}
+function esFavorita(id){return getFavoritos().includes(id)}
+function toggleFavorito(id){
+  let f=getFavoritos();f=f.includes(id)?f.filter(x=>x!==id):[...f,id];
+  localStorage.setItem("sakuba_favoritos",JSON.stringify(f));
+  renderizarListaObras(); if(novelaActiva?.id===id) verFichaObra(id,false);
+  toast(f.includes(id)?"Obra añadida a favoritos":"Obra retirada de favoritos");
+}
+function getHistorial(){
+  return CATALOGO_NOVELAS.map(o=>{
+    const idx=localStorage.getItem(`sakuba_progreso_${o.id}`);
+    return idx===null?null:{obra:o,idx:Number(idx)}
+  }).filter(Boolean);
+}
+function renderizarListaObras(lista=null,titulo=null){
+  const target=document.getElementById("lista-obras-target");
+  const tituloEl=document.getElementById("texto-titulo-principal");
+  target.innerHTML="";
+  if(titulo)tituloEl.innerText=titulo;
+  else tituloEl.innerText=categoriaFiltrada==="Todos"?"Obras con mejor clasificación de la editorial":`Obras de la categoría: ${categoriaFiltrada}`;
+  let obras=lista||[...CATALOGO_NOVELAS].filter(o=>categoriaFiltrada==="Todos"||o.generos.includes(categoriaFiltrada)).sort((a,b)=>b.estrellas-a.estrellas);
+  if(!obras.length){target.innerHTML='<div class="empty">No hay obras para mostrar.</div>';return}
+  obras.forEach((obra,index)=>{
+    const div=document.createElement("article");div.className="tarjeta-obra";div.style.animationDelay=`${Math.min(index,8)*45}ms`;
+    const statusClass=obra.status==="EN EMISIÓN"?"status-emision":"status-finalizado";
+    div.innerHTML=`
+      <div class="obra-cabecera">
+        ${portadaHTML(obra)}
+        <div class="obra-info">
+          <span class="obra-titulo" onclick="verFichaObra('${escaparHTML(obra.id)}')">${escaparHTML(obra.titulo)}</span>
+          <span class="badge-status ${statusClass}">${escaparHTML(obra.status)}</span>
+          <div class="estrellas-ranking">${estrellas(obra.estrellas)}</div>
+          <div class="obra-meta">Autor: ${escaparHTML(obra.autor)}</div>
+          <div class="obra-meta">Capítulos: ${obra.capitulos.length}</div>
+        </div>
+      </div>
+      <p class="obra-sinopsis">${escaparHTML(obra.sinopsis)}</p>
+      <div class="acciones-obra">
+        <button class="btn-accion" onclick="verFichaObra('${escaparHTML(obra.id)}')">Ver obra</button>
+        <button class="btn-accion btn-favorito ${esFavorita(obra.id)?"activo":""}" onclick="toggleFavorito('${escaparHTML(obra.id)}')">${esFavorita(obra.id)?"★ Guardada":"☆ Guardar"}</button>
+      </div>`;
+    target.appendChild(div);
+  });
+}
+function verFichaObra(id,actualizar=true){
+  novelaActiva=CATALOGO_NOVELAS.find(o=>o.id===id);if(!novelaActiva)return;
+  document.getElementById("ficha-titulo-obra").innerText=novelaActiva.titulo;
+  document.getElementById("ficha-autor-obra").innerText=`Autor: ${novelaActiva.autor}`;
+  document.getElementById("ficha-portada").innerHTML=portadaHTML(novelaActiva,"ficha-portada");
+  const badge=document.getElementById("ficha-badge-status");
+  badge.innerHTML=`<span class="badge-status ${novelaActiva.status==="EN EMISIÓN"?"status-emision":"status-finalizado"}">${novelaActiva.status}</span>`;
+  document.getElementById("ficha-ranking-obra").innerHTML=`<span class="estrellas-ranking">${estrellas(novelaActiva.estrellas)}</span>`;
+  document.getElementById("ficha-sinopsis-obra").innerText=novelaActiva.sinopsis;
+  const gens=document.getElementById("ficha-generos-obra");gens.innerHTML="";
+  novelaActiva.generos.forEach(g=>gens.innerHTML+=`<span class="btn-cat" style="display:inline-block;margin:0 5px 5px 0">${escaparHTML(g)}</span>`);
+  verificarMarcadorLocal();
+  const lista=document.getElementById("ficha-lista-capitulos");lista.innerHTML="";
+  novelaActiva.capitulos.forEach((cap,idx)=>{
+    const a=document.createElement("div");a.className="link-capitulo";
+    a.innerHTML=`<span>${escaparHTML(cap.titulo)}</span><span>→</span>`;
+    a.onclick=()=>cargarLecturaCapitulo(idx);lista.appendChild(a);
+  });
+  cambiarVista("vista-ficha-obra");
+  if(actualizar)actualizarURLCompartible(id);
+}
+function verificarMarcadorLocal(){
+  const box=document.getElementById("caja-marcador-continuar");box.innerHTML="";
+  const idx=localStorage.getItem(`sakuba_progreso_${novelaActiva.id}`);
+  if(idx!==null && Number(idx)<novelaActiva.capitulos.length){
+    const cap=novelaActiva.capitulos[Number(idx)];
+    box.innerHTML=`<button class="link-capitulo" style="width:100%;color:#005691"><strong>📖 Continuar leyendo:</strong><span>${escaparHTML(cap.titulo)} →</span></button>`;
+    box.firstChild.onclick=()=>cargarLecturaCapitulo(Number(idx));
+  }
+}
+function cargarLecturaCapitulo(index,actualizar=true){
+  if(!novelaActiva||index<0||index>=novelaActiva.capitulos.length)return;
+  indiceCapituloActual=index;
+  localStorage.setItem(`sakuba_progreso_${novelaActiva.id}`,index);
+  const cap=novelaActiva.capitulos[index];
+  document.getElementById("lectura-titulo-cap").innerText=cap.titulo;
+  const cont=document.getElementById("lectura-contenido-texto");cont.innerHTML="";
+  cap.contenido.split(/\n\s*\n/).forEach(txt=>{
+    if(txt.trim()){const p=document.createElement("p");p.innerHTML=escaparHTML(txt).replace(/\n/g,"<br>");cont.appendChild(p)}
+  });
+  document.getElementById("progreso-lectura").style.width=((index+1)/novelaActiva.capitulos.length*100)+"%";
+  document.getElementById("btn-cap-anterior").disabled=index===0;
+  document.getElementById("btn-cap-siguiente").disabled=index===novelaActiva.capitulos.length-1;
+  document.getElementById("btn-cap-anterior").onclick=()=>cargarLecturaCapitulo(index-1);
+  document.getElementById("btn-cap-siguiente").onclick=()=>cargarLecturaCapitulo(index+1);
+  document.getElementById("btn-regresar-ficha").onclick=()=>verFichaObra(novelaActiva.id);
+  document.getElementById("lectura-contenido-texto").style.fontSize=tamanoFuente+"px";
+  cambiarVista("vista-lectura-capitulo");
+  if(actualizar)actualizarURLCompartible(novelaActiva.id,index);
+}
+function cambiarVista(id){
+  ["vista-lista-obras","vista-ficha-obra","vista-lectura-capitulo"].forEach(x=>document.getElementById(x).style.display="none");
+  document.getElementById(id).style.display="block";window.scrollTo({top:0,behavior:"smooth"});
+}
+function mostrarInicio(){
+  categoriaFiltrada="Todos";
+  document.querySelectorAll(".btn-cat").forEach(b=>b.classList.toggle("activo",b.innerText==="En general"));
+  renderizarListaObras();cambiarVista("vista-lista-obras");
+  history.pushState({},"",location.pathname);
+}
+function filtrarCategoria(categoria){
+  categoriaFiltrada=categoria;
+  document.querySelectorAll(".barra-categories .btn-cat").forEach(b=>b.classList.toggle("activo",(categoria==="Todos"&&b.innerText==="En general")||b.innerText===categoria));
+  renderizarListaObras();cambiarVista("vista-lista-obras");
+}
+function buscarObra(){
+  const q=document.getElementById("input-buscar").value.toLowerCase().trim();
+  if(!q){mostrarInicio();return}
+  const resultados=CATALOGO_NOVELAS.filter(o=>
+    o.titulo.toLowerCase().includes(q)||o.autor.toLowerCase().includes(q)||
+    o.sinopsis.toLowerCase().includes(q)||o.generos.some(g=>g.toLowerCase().includes(q)));
+  renderizarListaObras(resultados,`Resultados de búsqueda: "${q}"`);
+  cambiarVista("vista-lista-obras");
+}
+function mostrarFavoritos(){
+  const fav=CATALOGO_NOVELAS.filter(o=>esFavorita(o.id));
+  renderizarListaObras(fav,"Mis obras favoritas");cambiarVista("vista-lista-obras");
+}
+function mostrarHistorial(){
+  const hist=getHistorial();
+  const target=document.getElementById("lista-obras-target");target.innerHTML="";
+  document.getElementById("texto-titulo-principal").innerText="Historial de lectura";
+  if(!hist.length){target.innerHTML='<div class="empty">Todavía no tienes capítulos guardados en tu historial.</div>';cambiarVista("vista-lista-obras");return}
+  hist.forEach((h,i)=>{
+    const d=document.createElement("article");d.className="tarjeta-obra";d.style.animationDelay=`${i*45}ms`;
+    d.innerHTML=`<div class="obra-cabecera">${portadaHTML(h.obra)}<div class="obra-info"><span class="obra-titulo">${escaparHTML(h.obra.titulo)}</span><div class="obra-meta">Último capítulo: ${escaparHTML(h.obra.capitulos[h.idx].titulo)}</div><div class="obra-meta">Progreso: ${h.idx+1} de ${h.obra.capitulos.length}</div><div class="acciones-obra"><button class="btn-accion">Continuar leyendo →</button></div></div></div>`;
+    d.querySelector("button").onclick=()=>{verFichaObra(h.obra.id);cargarLecturaCapitulo(h.idx)};target.appendChild(d);
+  });
+  cambiarVista("vista-lista-obras");
+}
+function cambiarFuente(delta){
+  tamanoFuente=Math.max(14,Math.min(28,tamanoFuente+delta));
+  document.getElementById("lectura-contenido-texto").style.fontSize=tamanoFuente+"px";
+  localStorage.setItem("sakuba_tamano_fuente",tamanoFuente);
+}
+function restablecerFuente(){tamanoFuente=18;document.getElementById("lectura-contenido-texto").style.fontSize="18px";localStorage.setItem("sakuba_tamano_fuente",18)}
+function actualizarURLCompartible(id,capIdx=null){
+  let u=`?obra=${encodeURIComponent(id)}`;if(capIdx!==null)u+=`&cap=${capIdx+1}`;
+  history.pushState({},"",u);
+}
+function procesarEnlacesCompartidos(){
+  const p=new URLSearchParams(location.search),id=p.get("obra"),cap=p.get("cap");
+  if(!id){renderizarListaObras();return}
+  const obra=CATALOGO_NOVELAS.find(o=>o.id===id);if(!obra){renderizarListaObras();return}
+  verFichaObra(id,false);
+  if(cap){const idx=Number(cap)-1;if(idx>=0&&idx<obra.capitulos.length)cargarLecturaCapitulo(idx,false)}
+}
+function toast(msg){
+  const t=document.getElementById("toast");t.innerText=msg;t.classList.add("visible");clearTimeout(window._toast);
+  window._toast=setTimeout(()=>t.classList.remove("visible"),2200);
+}
+window.addEventListener("popstate",procesarEnlacesCompartidos);
+window.addEventListener("load",()=>{
+  tamanoFuente=Number(localStorage.getItem("sakuba_tamano_fuente")||18);
+  procesarEnlacesCompartidos();
+});
+</script>
+</body>
+</html>
