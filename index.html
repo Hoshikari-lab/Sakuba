@@ -36,8 +36,8 @@
 </main><div id="toast" class="hidden" role="status" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:30;background:#17212b;color:white;padding:12px 16px;border-radius:10px;max-width:90vw"></div><footer>SAKUBA · Autopublicación y lectura de novelas ligeras en español</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL="PEGA_AQUI_TU_PROJECT_URL";
-const SUPABASE_ANON_KEY="PEGA_AQUI_TU_PUBLISHABLE_O_ANON_KEY";
+const SUPABASE_URL="https://gqlpabyaopawwooakdzp.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_rYYnTjR6I-8MtZ3OAIHjBg_3psSDquu";
 const MAX_CHAPTER=50000,MAX_COMMENT=2000;
 let db=null,user=null,profile=null,ranking="popular",activeNovel=null,chapters=[],chapterIndex=0,fontSize=18,authMode="signup",resetMode=false,returnAfterAuth="home-view";
 const $=id=>document.getElementById(id);
