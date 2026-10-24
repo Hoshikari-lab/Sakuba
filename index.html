@@ -93,8 +93,8 @@
 <!-- Supabase JS v2. Sustituye los valores de configuración indicados en los pasos de instalación. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "PEGA_AQUI_TU_PROJECT_URL";
-const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_PUBLISHABLE_O_ANON_KEY";
+const SUPABASE_URL = "https://gqlpabyaopawwooakdzp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_rYYnTjR6I-8MtZ3OAIHjBg_3psSDquu";
 let db = null, currentUser = null, currentProfile = null, activeNovel = null, activeChapters = [], activeChapterIndex = 0, fontSize = 18, authMode = "signup";
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
